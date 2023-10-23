@@ -13,6 +13,7 @@ import Sobre from './pages/Sobre/index.js';
 import Cliente from './pages/Cliente/index.js';
 import ClienteList from './pages/ClienteList/index.js';
 import Login from './pages/Login/index.js';
+import NotFound from './pages/NotFound/index.js';
 
 const App = () => (
   <Router>
@@ -24,6 +25,7 @@ const App = () => (
       <Route exact path="/cliente/:id" component={Cliente}/>
       <Route exact path="/cliente-list" component={ClienteList} />
       <Route exact path="/login" component={Login}/>
+      <Route exact path="/*" component={NotFound}/>
     </Switch>
   </Router>
 );
