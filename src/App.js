@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState }from 'react';
 import './css/tailwind.css';
 
 import {
@@ -14,20 +14,34 @@ import Cliente from './pages/Cliente/index.js';
 import ClienteList from './pages/ClienteList/index.js';
 import Login from './pages/Login/index.js';
 import NotFound from './pages/NotFound/index.js';
+import PrivateRoute from "./PrivateRoute";
+import { AuthContext } from "./context/auth";
 
-const App = () => (
-  <Router>
-    <Header />
-    <Switch>
-      <Route exact path="/" component={Home}/>
-      <Route exact path="/sobre" component={Sobre}/>
-      <Route exact path="/cliente" component={Cliente}/>
-      <Route exact path="/cliente/:id" component={Cliente}/>
-      <Route exact path="/cliente-list" component={ClienteList} />
-      <Route exact path="/login" component={Login}/>
-      <Route exact path="/*" component={NotFound}/>
-    </Switch>
-  </Router>
-);
+const App = () => {
+  const [authTokens, setAuthTokens] = useState();
+
+  const setTokens = (data) => {
+    localStorage.setItem("tokens", JSON.stringify(data));
+    setAuthTokens(data);
+  }
+
+  return (
+    <AuthContext.Provider value={{ authTokens, setAuthTokens: setTokens }}>
+      <Router>
+        <Header />
+        <Switch>
+          <PrivateRoute path="/home" component={Home} />
+          <PrivateRoute path="/sobre" component={Sobre} />
+          <PrivateRoute path="/cliente" component={Cliente} />
+          <PrivateRoute path="/cliente/:id" component={Cliente} />
+          <PrivateRoute path="/cliente-list" component={ClienteList} />
+          <Route exact path="/login" component={Login} />
+          <Route exact path="/" component={Login} />
+          <Route exact path="/*" component={NotFound} />
+        </Switch>
+      </Router>
+    </AuthContext.Provider>
+  );
+};
 
 export default App;
