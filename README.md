@@ -76,6 +76,10 @@ Cliente: http://localhost:3000/cliente <br>
 Lista de Clientes: http://localhost:3000/cliente-list (Ao clicar em um cliente, o detalhe dele é exibido)<br>
 Login: http://localhost:3000/login <br>
 
+
+## Melhorias da versão 
+Integração com API do projeto https://github.com/salomao86/backend-user-express/tree/v2.0 para autenticação do usuário e rotas privadas
+
 ## Contribuição
 
 Sinta-se à vontade para contribuir com melhorias para este projeto. Crie um fork, faça suas alterações e envie um pull request.
