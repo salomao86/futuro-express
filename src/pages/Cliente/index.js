@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, Redirect } from "react-router-dom";
 import axios from "axios";
-
-const url = 'https://jsonplaceholder.typicode.com/users?id=';
-let data;
+import styled from 'styled-components';
 
 
 const Cliente = () => {
@@ -11,12 +9,15 @@ const Cliente = () => {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [telefone, setTelefone] = useState('');
-  const [senha, setSenha] = useState('');
+  const [senha ] = useState('');
   const [isError, setIsError] = useState(false);
 
   const inputName = useRef(null);
   const inputEmail = useRef(null);
   const inputTelefone = useRef(null);
+
+  const Error = styled.div`
+  background-color: red;`;
 
   useEffect(() => {
     if (id) {

@@ -1,46 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
-
-const url = 'https://jsonplaceholder.typicode.com/users';
+import axios from "axios";
+import styled from 'styled-components';
 
 const ClientList = () => {
-    const [data, setData] = useState([])
+    const [data, setData] = useState([]);
+    const [isError, setIsError] = useState(false);
+
+    const Error = styled.div`
+    background-color: red;`;
 
     useEffect(() => {
         getClientes();
-     });
+    });
 
     async function getClientes() {
 
-        try {
-            const res = await fetch(url);
-            setData(await res.json());
-        } catch (err) {
-            console.log(err);
-        }
-    };
-
-    const postLogin = (e) => {
-        e.preventDefault();
         axios
-          .post("http://localhost:3001/auth/login", {
-            "email": email,
-            "senha": senha
-          })
-          .then((result) => {
-            console.log(result)
-            if (result.status === 200) {
-              setAuthTokens(result.data);
-              setLoggedIn(true);
-            } else {
-              setIsError(true);
-            }
-          })
-          .catch((e) => {
-            setIsError(true);
-          });
-          
-      };
+            .get("http://localhost:3001/user/findAll")
+            .then((result) => {
+                if (result.status === 200) {
+                    console.log("cadastro encontrado com sucessso");
+                    setData(result);
+                } else {
+                    setIsError(true);
+                }
+            })
+            .catch((e) => {
+                setIsError(true);
+            });
+    };
 
     return (
         <div className="container mx-auto mt-8">
@@ -52,7 +41,11 @@ const ClientList = () => {
                     </li>
                 ))}
             </ul>
+            {isError && (
+                <Error>Não existem dados para listagem!</Error>
+            )}
         </div>
+
     );
 };
 
