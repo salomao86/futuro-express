@@ -20,6 +20,28 @@ const ClientList = () => {
         }
     };
 
+    const postLogin = (e) => {
+        e.preventDefault();
+        axios
+          .post("http://localhost:3001/auth/login", {
+            "email": email,
+            "senha": senha
+          })
+          .then((result) => {
+            console.log(result)
+            if (result.status === 200) {
+              setAuthTokens(result.data);
+              setLoggedIn(true);
+            } else {
+              setIsError(true);
+            }
+          })
+          .catch((e) => {
+            setIsError(true);
+          });
+          
+      };
+
     return (
         <div className="container mx-auto mt-8">
             <h1 className="text-3xl font-bold mb-4">Lista de Clientes</h1>

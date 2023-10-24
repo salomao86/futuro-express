@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useParams } from "react-router-dom";
+import axios from "axios";
 
 const url = 'https://jsonplaceholder.typicode.com/users?id=';
 let data;
@@ -10,6 +11,8 @@ const Cliente = () => {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [telefone, setTelefone] = useState('');
+  const [senha, setSenha] = useState('');
+  const [isError, setIsError] = useState(false);
 
   const inputName = useRef(null);
   const inputEmail = useRef(null);
@@ -18,23 +21,90 @@ const Cliente = () => {
   useEffect(() => {
     if (id) {
       getCliente();
-    }
+    } 
   });
 
-  async function getCliente() {
+  const postCliente = (e) => {
+    axios
+      .post("http://localhost:3001/user/create", {
+        "nome": nome,
+        "email": email,
+        "senha": senha
+      })
+      .then((result) => {
+        console.log(result)
+        if (result.status === 200) {
+          console.log("cadastro efetuado com sucessso");
+          return <Redirect to="/cliente-list" />;
+        } else {
+          setIsError(true);
+        }
+      })
+      .catch((e) => {
+        setIsError(true);
+      });
+      
+  };
 
-    try {
-      const res = await fetch(url + id);
-      data = await res.json();
-      console.log(data);
-      if (data) {
-        inputName.current.value = data[0].name;
-        inputEmail.current.value = data[0].email;
-        inputTelefone.current.value = data[0].phone;
-      }
-    } catch (err) {
-      console.log(err);
-    }
+  const updateCliente = (e) => {
+    axios
+      .put("http://localhost:3001/user/update" + id, {
+        "nome": nome,
+        "email": email,
+        "senha": senha
+      })
+      .then((result) => {
+        console.log(result)
+        if (result.status === 200) {
+          console.log("cadastro atualizado com sucessso");
+          return <Redirect to="/cliente-list" />;
+        } else {
+          setIsError(true);
+        }
+      })
+      .catch((e) => {
+        setIsError(true);
+      });
+      
+  };
+
+  const deleteCliente = (e) => {
+    axios
+      .delete("http://localhost:3001/user/delete" + id)
+      .then((result) => {
+        console.log(result)
+        if (result.status === 200) {
+          console.log("cadastro deletado com sucessso");
+          return <Redirect to="/cliente-list" />;
+        } else {
+          setIsError(true);
+        }
+      })
+      .catch((e) => {
+        setIsError(true);
+      });
+      
+  };
+
+  const getCliente = (e) => {
+    axios
+      .get("http://localhost:3001/user/find" + id)
+      .then((result) => {
+        console.log(result)
+        if (result.status === 200) {
+          console.log("cadastro encontrado com sucessso");
+          if (result) {
+            inputName.current.value = result.nome;
+            inputEmail.current.value = result.email;
+          }
+        } else {
+          setIsError(true);
+        }
+      })
+      .catch((e) => {
+        setIsError(true);
+      });
+      
   };
 
   const handleSubmit = (e) => {
@@ -68,7 +138,7 @@ const Cliente = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+          <label className="block text-gray-700 text-sm font-boonClickld mb-2" htmlFor="email">
             Email
           </label>
           <input
@@ -99,8 +169,27 @@ const Cliente = () => {
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="submit"
+            onClick={postCliente} 
           >
             Salvar
+          </button>
+
+
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+            onClick={updateCliente} 
+          >
+            Atualizar
+          </button>
+
+
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+            onClick={deleteCliente} 
+          >
+            Excluir
           </button>
 
           <button
@@ -118,6 +207,9 @@ const Cliente = () => {
           </Link>
         </div>
       </form>
+      {isError && (
+          <Error>Ocorreu um erro na operação, tente novamentes!</Error>
+        )}
     </div>
   );
 };
