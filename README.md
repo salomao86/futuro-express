@@ -78,7 +78,7 @@ Login: http://localhost:3000/login <br>
 
 
 ## Melhorias da versão 
-Integração com API do projeto https://github.com/salomao86/backend-user-express/tree/v2.0 para autenticação do usuário e rotas privadas
+Integração com API do projeto https://github.com/salomao86/backend-futuro-express para autenticação do usuário e rotas privadas
 
 ## Contribuição
 
