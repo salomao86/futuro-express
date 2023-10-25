@@ -2,6 +2,9 @@
 
 Este é um projeto de exemplo de uma aplicação React que utiliza o Tailwind CSS para estilos e o React Router para navegação entre páginas.
 
+## Video Não Listado do Youtube
+Está disponível em https://youtu.be/gBh6HNkBclI explicando sobre a aplicação
+
 ## Pré-requisitos
 
 Certifique-se de ter o Node.js instalado em sua máquina. Você pode baixá-lo em [nodejs.org](https://nodejs.org/).
