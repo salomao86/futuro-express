@@ -23,9 +23,9 @@ const Login = () => {
         "senha": senha
       })
       .then((result) => {
-        console.log(result)
         if (result.status === 200) {
-          setAuthTokens(result.data);
+          console.log(result.data);
+          setAuthTokens(result.data.token);
           setLoggedIn(true);
         } else {
           setIsError(true);

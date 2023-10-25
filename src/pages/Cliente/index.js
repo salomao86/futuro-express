@@ -1,31 +1,49 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link, useParams, Redirect } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 import styled from 'styled-components';
-
+import { useAuth } from "../../context/auth";
 
 const Cliente = () => {
+  
   const { id } = useParams();
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
-  const [telefone, setTelefone] = useState('');
-  const [senha ] = useState('');
+  const [senha, setSenha] = useState('');
   const [isError, setIsError] = useState(false);
+  const { authTokens } = useAuth();
+
+  const config = {
+    headers: { Authorization: `Bearer ${authTokens}` }
+};
+
+  const history = useHistory();
+  const handleOnList = () =>  history.push('/cliente-list');
 
   const inputName = useRef(null);
   const inputEmail = useRef(null);
-  const inputTelefone = useRef(null);
+  const inputSenha = useRef(null);
 
   const Error = styled.div`
   background-color: red;`;
 
   useEffect(() => {
+
     if (id) {
+      console.log(id);
       getCliente();
     } 
   });
 
-  const postCliente = (e) => {
+  const salvar = () => {
+    if (id) {
+      updateCliente();
+    } else {
+      postCliente();
+    }
+  }
+
+  const postCliente = () => {
     axios
       .post("http://localhost:3001/user/create", {
         "nome": nome,
@@ -36,7 +54,7 @@ const Cliente = () => {
         console.log(result)
         if (result.status === 200) {
           console.log("cadastro efetuado com sucessso");
-          return <Redirect to="/cliente-list" />;
+          handleOnList();
         } else {
           setIsError(true);
         }
@@ -47,18 +65,21 @@ const Cliente = () => {
       
   };
 
-  const updateCliente = (e) => {
+  const updateCliente = () => {
+
+    console.log(nome);
+    console.log(email);
     axios
-      .put("http://localhost:3001/user/update" + id, {
+      .put("http://localhost:3001/user/update/" + id, {
         "nome": nome,
         "email": email,
         "senha": senha
-      })
+      }, config)
       .then((result) => {
         console.log(result)
         if (result.status === 200) {
           console.log("cadastro atualizado com sucessso");
-          return <Redirect to="/cliente-list" />;
+          handleOnList();
         } else {
           setIsError(true);
         }
@@ -71,12 +92,12 @@ const Cliente = () => {
 
   const deleteCliente = (e) => {
     axios
-      .delete("http://localhost:3001/user/delete" + id)
+      .delete("http://localhost:3001/user/delete/" + id, config)
       .then((result) => {
         console.log(result)
         if (result.status === 200) {
           console.log("cadastro deletado com sucessso");
-          return <Redirect to="/cliente-list" />;
+          handleOnList();
         } else {
           setIsError(true);
         }
@@ -89,17 +110,22 @@ const Cliente = () => {
 
   const getCliente = (e) => {
     axios
-      .get("http://localhost:3001/user/find" + id)
+      .get("http://localhost:3001/user/find/" + id, config)
       .then((result) => {
         console.log(result)
         if (result.status === 200) {
           console.log("cadastro encontrado com sucessso");
           if (result) {
-            inputName.current.value = result.nome;
-            inputEmail.current.value = result.email;
+            inputName.current.value = result.data.nome;
+            inputEmail.current.value = result.data.email;
+            setNome(result.data.nome);
+            setEmail(result.data.email);
           }
         } else {
-          setIsError(true);
+          setIsError(true);    if (id) {
+            console.log(id);
+            getCliente();
+          } 
         }
       })
       .catch((e) => {
@@ -116,9 +142,8 @@ const Cliente = () => {
     e.preventDefault();
     inputName.current.value = null;
     inputEmail.current.value = null;
-    inputTelefone.current.value = null;
+    inputSenha.current.value = null;
   };
-
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -153,37 +178,27 @@ const Cliente = () => {
           />
         </div>
         <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="telefone">
-            Telefone
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Senha">
+            Senha
           </label>
           <input
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            ref={inputTelefone}
-            id="telefone"
+            ref={inputSenha}
+            id="senha"
             type="text"
-            placeholder="Telefone"
-            value={telefone}
-            onChange={(e) => setTelefone(e.target.value)}
+            placeholder="Senha"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
           />
         </div>
         <div className="flex items-center justify-between">
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="submit"
-            onClick={postCliente} 
+            onClick={salvar} 
           >
             Salvar
           </button>
-
-
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="submit"
-            onClick={updateCliente} 
-          >
-            Atualizar
-          </button>
-
 
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -198,18 +213,16 @@ const Cliente = () => {
             onClick={limpar} >
             Limpar
           </button>
-          <Link to="/cliente-list">
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
+            onClick={handleOnList}
             >
               Listar
             </button>
-          </Link>
         </div>
       </form>
       {isError && (
-          <Error>Ocorreu um erro na operação, tente novamentes!</Error>
+          <Error>Ocorreu um erro na operação, tente novamente!</Error>
         )}
     </div>
   );
